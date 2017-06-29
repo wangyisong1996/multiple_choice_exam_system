@@ -1,0 +1,19 @@
+{
+  "name": "multiple_choice_exam_system",
+  "version": "1.0.0",
+  "description": "A simple web-based system for holding multiple choice examinations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangyisong1996/multiple_choice_exam_system.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wangyisong1996/multiple_choice_exam_system/issues"
+  },
+  "homepage": "https://github.com/wangyisong1996/multiple_choice_exam_system#readme"
+}
