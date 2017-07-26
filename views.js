@@ -415,11 +415,27 @@ var send_main_page = function(res, user_name) {
 	res.write(fs.readFileSync("main.html", "utf-8").replace("{user_name}", htmlspecialchars(user_name)));
 };
 
+var send_wait_for_exam_page = function(res) {
+	res.write(fs.readFileSync("wait_for_exam.html", "utf-8"));
+};
+
+var send_score_page = function(res, user_name, score) {
+	res.write(fs.readFileSync("score.html", "utf-8").replace("{user_name}", htmlspecialchars(user_name)).replace("{score}", score + ""));
+};
+
+var send_exam_page = function(res, user_name, n_problems) {
+	// TODO
+	res.write("TODO");
+};
+
 module.exports = {
 	send_header : send_header,
 	send_admin_header : send_admin_header,
 	send_admin_footer : send_admin_footer,
 	send_admin_view_problems : send_admin_view_problems,
 	send_login_page : send_login_page,
-	send_main_page : send_main_page
+	send_main_page : send_main_page,
+	send_wait_for_exam_page : send_wait_for_exam_page,
+	send_score_page : send_score_page,
+	send_exam_page : send_exam_page
 };

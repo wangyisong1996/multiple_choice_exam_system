@@ -91,10 +91,16 @@ var get_user_name = function(req) {
 	return req.session.user_name;
 };
 
+var get_score = function(req) {
+	// TODO
+	return 233;
+};
+
 module.exports = {
 	check_login : check_login,
 	check_password : check_password,
 	do_login : do_login,
 	do_logout : do_logout,
-	get_user_name : get_user_name
+	get_user_name : get_user_name,
+	get_score : get_score
 };

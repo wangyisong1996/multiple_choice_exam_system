@@ -1,6 +1,7 @@
 var views = require("./views");
 var problems = require("./problems");
 var user_service = require("./user_service");
+var exam_service = require("./exam_service");
 
 var index = function(req, res, err) {
 	if (!user_service.check_login(req)) {
@@ -35,7 +36,17 @@ var index_logout = function(req, res, err) {
 };
 
 var exam = function(req, res, err) {
-	res.send("TODO");
+	if (!user_service.check_login(req)) {
+		return res.redirect("/");
+	}
+	if (!exam_service.has_started()) {
+		views.send_wait_for_exam_page(res);
+	} else if (exam_service.has_ended()) {
+		views.send_score_page(res, user_service.get_user_name(req), user_service.get_score(req));
+	} else {
+		views.send_exam_page(res, user_service.get_user_name(req), problems.get_problems().length);
+	}
+	res.send();
 };
 
 module.exports = function(app) {
