@@ -96,11 +96,16 @@ var get_score = function(req) {
 	return 233;
 };
 
+var dump = function() {
+	return users;
+};
+
 module.exports = {
 	check_login : check_login,
 	check_password : check_password,
 	do_login : do_login,
 	do_logout : do_logout,
 	get_user_name : get_user_name,
-	get_score : get_score
+	get_score : get_score,
+	dump : dump
 };

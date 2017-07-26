@@ -49,9 +49,23 @@ var exam = function(req, res, err) {
 	res.send();
 };
 
+var get_remaining_time = function(req, res, err) {
+	if (!user_service.check_login(req)) {
+		return res.redirect("/");
+	}
+	if (!exam_service.has_started()) {
+		return res.send("Not started");
+	}
+	if (exam_service.has_ended()) {
+		return res.send("0");
+	}
+	res.send(exam_service.get_remaining_time() + "");
+};
+
 module.exports = function(app) {
 	app.get("/", index);
 	app.post("/", index_login);
 	app.post("/logout", index_logout);
 	app.get("/exam", exam);
+	app.get("/get_remaining_time", get_remaining_time);
 };

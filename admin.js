@@ -1,6 +1,8 @@
 var fs = require("fs");
 var problems = require("./problems");
 var views = require("./views");
+var exam_service = require("./exam_service");
+var user_service = require("./user_service");
 
 var admin_password = fs.readFileSync("config/admin_password.txt", "utf-8").split("\n")[0];
 if (!admin_password || admin_password == "") {
@@ -67,6 +69,21 @@ var get_problems = function(req, res, err) {
 	res.json(problems.get_problems());
 };
 
+var dump = function(req, res, err) {
+	if (!check_admin_login(req)) return res.redirect("/admin");
+	res.json(user_service.dump());
+};
+
+var start_exam = function(req, res, err) {
+	if (!check_admin_login(req)) return res.redirect("/admin");
+	if (exam_service.has_started()) return res.redirect("/admin");
+	var t = parseInt(req.body.time);
+	if (t >= 10 && t <= 60 * 60 * 24 * 1000) {
+		exam_service.do_start_exam(t);
+	}
+	res.redirect("/admin");
+};
+
 module.exports = function(app) {
 	app.get("/admin", main);
 	app.post("/admin/login", login);
@@ -74,4 +91,6 @@ module.exports = function(app) {
 	// app.get("/admin/edit_problems", edit_problems);
 	app.get("/admin/view_problems", view_problems);
 	app.get("/admin/get_problems", get_problems);
+	app.get("/admin/dump", dump);
+	app.post("/admin/start_exam", start_exam);
 };
