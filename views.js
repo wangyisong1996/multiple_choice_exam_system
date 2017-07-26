@@ -407,9 +407,19 @@ var send_admin_view_problems = function(res, problems) {
 	res.write(`</div>`);
 };
 
+var send_login_page = function(res) {
+	res.write(fs.readFileSync("login.html", "utf-8"));
+};
+
+var send_main_page = function(res, user_name) {
+	res.write(fs.readFileSync("main.html", "utf-8").replace("{user_name}", htmlspecialchars(user_name)));
+};
+
 module.exports = {
 	send_header : send_header,
 	send_admin_header : send_admin_header,
 	send_admin_footer : send_admin_footer,
-	send_admin_view_problems : send_admin_view_problems
+	send_admin_view_problems : send_admin_view_problems,
+	send_login_page : send_login_page,
+	send_main_page : send_main_page
 };

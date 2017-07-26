@@ -24,10 +24,8 @@ app.use(session({
 	saveUninitialized : true
 }));
 
-// 
-app.get("/", function(req, res, err) {
-	res.send("hello world");
-});
+// /
+require("./user_main")(app);
 
 // /admin/*
 require("./admin")(app);
