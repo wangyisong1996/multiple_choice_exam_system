@@ -9,6 +9,4 @@ $ npm install
 $ node index.js [port]
 ```
 
-All the configurations are stored in `config/config.json`. You can change whatever you want.
-
 (TODO)
