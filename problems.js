@@ -1,5 +1,6 @@
 var fs = require("fs");
 var csv = require("csv");
+var user_service;
 
 var problems = [];
 var problems_str = "";
@@ -33,11 +34,37 @@ var load_problems_from_file = function(file_name) {
 // initialization
 load_problems_from_file("config/problems.csv");
 
+var count_submissions = function() {
+	var ret = [];
+	var n = problems.length;
+	for (var i = 0; i < n; i++) {
+		ret[i] = {
+			A : 0, B : 0, C : 0, D : 0
+		};
+	}
+	var user_list = user_service.admin_get_user_list();
+	var n_u = user_list.length;
+	for (var i = 0; i < n_u; i++) {
+		var sub = user_service.admin_get_submissions(user_list[i].user_name);
+		for (var j = 0; j < n; j++) {
+			if (sub[j] != "") {
+				++ret[j][sub[j]];
+			}
+		}
+	}
+	
+	return ret;
+};
+
 module.exports = {
 	get_problems_str : function() {
 		return problems_str;
 	},
 	get_problems : function() {
 		return problems;
-	}
+	},
+	count_submissions : count_submissions
 };
+
+user_service = require("./user_service");
+

@@ -386,7 +386,14 @@ var send_admin_view_problems = function(res, problems) {
 		res.write(`<td id="option_B" class="col-xs-2"></td>`);
 		res.write(`<td id="option_C" class="col-xs-2"></td>`);
 		res.write(`<td id="option_D" class="col-xs-2"></td>`);
-		res.write(`</tr></table>`);
+		res.write(`</tr>`);
+		res.write(`<tr>`);
+		res.write(`<td id="count_A" class="col-xs-2"></td>`);
+		res.write(`<td id="count_B" class="col-xs-2"></td>`);
+		res.write(`<td id="count_C" class="col-xs-2"></td>`);
+		res.write(`<td id="count_D" class="col-xs-2"></td>`);
+		res.write(`</tr>`);
+		res.write(`</table>`);
 		res.write(`</p>`);
 	}
 	
@@ -476,6 +483,12 @@ var send_exam_page = function(res, user_name, n_problems) {
 		res.write(`<td id="option_D" class="col-xs-2" onclick="select_option('D');"></td>`);
 		res.write(`</tr></table>`);
 		res.write(`</p>`);
+		res.write(`<p>`);
+		res.write(`<table class="table-hover-cell"><tr>`);
+		res.write(`<td class="col-xs-2" onclick="prev_problem();">&lt;&lt;&lt; 上一题 &lt;&lt;&lt;</td>`);
+		res.write(`<td class="col-xs-2" onclick="next_problem();">&gt;&gt;&gt; 下一题 &gt;&gt;&gt;</td>`);
+		res.write(`</tr></table>`);
+		res.write(`</p>`);
 	}
 	
 	res.write(`</div>`);
@@ -514,6 +527,24 @@ var send_exam_page = function(res, user_name, n_problems) {
 	res.send();
 };
 
+var send_admin_rank_list = function(res, user_list) {
+	res.write(`<div class="row">`);
+	
+	res.write(`<table class="table-hover">`);
+	
+	var n = user_list.length;
+	for (var i = 0; i < n; i++) {
+		res.write(`<tr>`);
+		res.write(`<td class="col-xs-2">` + htmlspecialchars(user_list[i].user_name) + `</td>`);
+		res.write(`<td class="col-xs-2">` + user_list[i].score + `</td>`);
+		res.write(`</tr>`);
+	}
+	
+	res.write(`</table>`);
+	
+	res.write(`</div>`);
+};
+
 module.exports = {
 	send_header : send_header,
 	send_footer : send_footer,
@@ -524,5 +555,6 @@ module.exports = {
 	send_main_page : send_main_page,
 	send_wait_for_exam_page : send_wait_for_exam_page,
 	send_score_page : send_score_page,
-	send_exam_page : send_exam_page
+	send_exam_page : send_exam_page,
+	send_admin_rank_list : send_admin_rank_list
 };

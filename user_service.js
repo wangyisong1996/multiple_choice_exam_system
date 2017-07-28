@@ -177,6 +177,37 @@ var submit = function(req) {
 	return true;
 };
 
+var admin_get_user_list = function() {
+	var ret = [];
+	for (var u in users) {
+		ret.push({
+			user_name : u,
+			score : users[u].score
+		});
+	}
+	return ret;
+};
+
+var admin_get_submissions = function(user_name) {
+	var ret = [];
+	var prof = users[user_name];
+	var n = problems.get_problems().length;
+	for (var i = 0; i < n; i++) {
+		var tmp = prof.problems[i].selection;
+		if (tmp != "") {
+			tmp = {
+				A : 0,
+				B : 1,
+				C : 2,
+				D : 3
+			}[tmp];
+			tmp = ["A", "B", "C", "D"][prof.problems[i].option_map[tmp]];
+		}
+		ret.push(tmp);
+	}
+	return ret;
+};
+
 module.exports = {
 	check_login : check_login,
 	check_password : check_password,
@@ -186,5 +217,7 @@ module.exports = {
 	get_score : get_score,
 	dump : dump,
 	get_problems : get_problems,
-	submit : submit
+	submit : submit,
+	admin_get_user_list : admin_get_user_list,
+	admin_get_submissions : admin_get_submissions
 };

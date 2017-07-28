@@ -40,6 +40,16 @@ var select_problem = function(pid) {
 	MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 };
 
+var next_problem = function() {
+	if (selected_pid == -1) return;
+	select_problem((selected_pid + 1) % n_problems);
+};
+
+var prev_problem = function() {
+	if (selected_pid == -1) return;
+	select_problem((selected_pid + n_problems - 1) % n_problems);
+};
+
 var select_option = function(option) {
 	if (selected_pid == -1) return;
 	
@@ -49,6 +59,7 @@ var select_option = function(option) {
 	selected_option = option;
 	option_tds[selected_option].addClass("selected");
 	selections[selected_pid] = selected_option;
+	$("#problem_" + selected_pid).text(selected_pid + " " + selected_option);
 	
 	submit_selections();
 };
@@ -68,6 +79,9 @@ $.ajax({
 	problems = res;
 	for (var i = 0; i < n_problems; i++) {
 		selections[i] = problems[i].selection;
+		if (selections[i] != "") {
+			$("#problem_" + i).text(i + " " + selections[i]);
+		}
 	}
 	select_problem(0);
 	setInterval(submit_selections, 5000);

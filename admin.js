@@ -69,6 +69,11 @@ var get_problems = function(req, res, err) {
 	res.json(problems.get_problems());
 };
 
+var get_submissions = function(req, res, err) {
+	if (!check_admin_login(req)) return res.redirect("/admin");
+	res.json(problems.count_submissions());
+}
+
 var dump = function(req, res, err) {
 	if (!check_admin_login(req)) return res.redirect("/admin");
 	res.json(user_service.dump());
@@ -84,6 +89,32 @@ var start_exam = function(req, res, err) {
 	res.redirect("/admin");
 };
 
+var rank_list = function(req, res, err) {
+	if (!check_admin_login(req)) return res.redirect("/admin");
+	
+	var user_list = user_service.admin_get_user_list();
+	
+	var compare = function(a, b) {
+		return a.score > b.score || (a.score == b.score && a.user_name < b.user_name);
+	};
+	
+	var n = user_list.length;
+	for (var i = 0; i < n; i++) {
+		for (var j = i + 1; j < n; j++) {
+			if (compare(user_list[j], user_list[i])) {
+				var tmp = user_list[i];
+				user_list[i] = user_list[j];
+				user_list[j] = tmp;
+			}
+		}
+	}
+	
+	views.send_admin_header(res, "Rank list");
+	views.send_admin_rank_list(res, user_list);
+	views.send_admin_footer(res);
+	res.send();
+};
+
 module.exports = function(app) {
 	app.get("/admin", main);
 	app.post("/admin/login", login);
@@ -93,4 +124,6 @@ module.exports = function(app) {
 	app.get("/admin/get_problems", get_problems);
 	app.get("/admin/dump", dump);
 	app.post("/admin/start_exam", start_exam);
+	app.get("/admin/get_submissions", get_submissions);
+	app.get("/admin/rank_list", rank_list);
 };
