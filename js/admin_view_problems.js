@@ -21,7 +21,10 @@ var select_problem = function(pid) {
 	
 	for (var x in all_subs[pid]) {
 		$("#count_" + x).text(all_subs[pid][x]);
+		$("#option_" + x).removeClass("selected");
 	}
+	
+	$("#option_" + prob.answer).addClass("selected");
 	
 	MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 };
