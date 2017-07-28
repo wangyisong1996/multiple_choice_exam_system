@@ -23,7 +23,9 @@ var do_start_exam = function(t) {
 
 var exam_tick_func = function() {
 	var cur_date = new Date();
-	var dt = (cur_date - t_start) / 1000;
+	var dt = (cur_date - t_start);
+	dt -= dt % 1000;
+	dt /= 1000;
 	t_remaining = t_tot - dt;
 	if (t_remaining <= 0) {
 		t_remaining = 0;

@@ -285,6 +285,13 @@ var _send_non_responsive_css = function(res) {
 				    border: none;
 				}
 				
+				.table-hover-cell > tbody > tr > td:hover {
+				    background-color: #f5f5f5
+				}
+				.table-hover-cell > tbody > tr > td.selected:hover {
+				    background-color: #ddd
+				}
+				
 				th, td {
 					text-align: center;
 				}
@@ -337,7 +344,12 @@ var send_admin_header = function(res, title) {
 		`);
 };
 
-var send_header = undefined;
+var send_header = function(res, title) {
+	_send_normal_header(res, title);
+	res.write(`
+			<div class="container">
+		`);
+};
 
 var send_admin_footer = function(res) {
 	res.write(`
@@ -345,6 +357,10 @@ var send_admin_footer = function(res) {
 		</body>
 		</html>
 		`);
+};
+
+var send_footer = function(res) {
+	send_admin_footer(res);
 };
 
 // var send_admin_edit_problems = function(res, problems_str) {
@@ -424,12 +440,83 @@ var send_score_page = function(res, user_name, score) {
 };
 
 var send_exam_page = function(res, user_name, n_problems) {
-	// TODO
-	res.write("TODO");
+	send_header(res, "期中考试");
+	
+	res.write(`<div class="row">`);
+	
+	res.write(`<div class="col-xs-8">`);
+	
+	res.write(`<h1> 欢迎您，{user_name}`.replace("{user_name}", htmlspecialchars(user_name)));
+	res.write(` | 剩余时间： <span id="time_minutes">???</span> 分 <span id="time_seconds">???</span> 秒 </h1>`);
+	
+	res.write(`</div>`);
+	
+	res.write(`<div class="col-xs-4">`);
+	
+	res.write(`<h3 style="text-align:right;"> 最后一次提交答案： <span id="last_update_seconds">???</span> 秒之前 </h3>`);
+	
+	res.write(`</div>`);
+	
+	res.write(`</div>`);
+	
+	// row 2
+	
+	res.write(`<div class="row">`);
+	res.write(`<div class="col-xs-8">`);
+	
+	{
+		res.write(`<h3> 题目描述 </h3>`);
+		res.write(`<p id="problem_description"> Loading ... </p>`);
+		res.write(`<h3> 选项 </h3>`);
+		res.write(`<p>`);
+		res.write(`<table class="table-hover-cell"><tr>`);
+		res.write(`<td id="option_A" class="col-xs-2" onclick="select_option('A');"></td>`);
+		res.write(`<td id="option_B" class="col-xs-2" onclick="select_option('B');"></td>`);
+		res.write(`<td id="option_C" class="col-xs-2" onclick="select_option('C');"></td>`);
+		res.write(`<td id="option_D" class="col-xs-2" onclick="select_option('D');"></td>`);
+		res.write(`</tr></table>`);
+		res.write(`</p>`);
+	}
+	
+	res.write(`</div>`);
+	res.write(`<div class="col-xs-4">`);
+	
+	{
+		res.write(`<table class="table table-bordered table-hover-cell">`);
+		res.write(`<caption>题目列表</caption>`);
+		var n = n_problems;
+		var lines = (n - 1) / 8 + 1;
+		for (var i = 0; i < lines; i++) {
+			res.write(`<tr>`);
+			var l = i * 8;
+			var r = l + 8 - 1;
+			if (n - 1 < r) r = n - 1;
+			for (var j = l; j <= r; j++) {
+				res.write(`<td id="problem_` + j + `" class="col-xs-1" onclick="select_problem(` + j + `);">`);
+				res.write(j + "");
+				res.write(`</td>`);
+			}
+			res.write(`</tr>`);
+		}
+		res.write(`</table>`);
+	}
+	
+	{
+		res.write(`<script>`);
+		res.write(fs.readFileSync("js/exam.js", "utf-8"));
+		res.write(`</script>`);
+	}
+	
+	res.write(`</div>`);
+	res.write(`</div>`);
+	
+	send_footer(res);
+	res.send();
 };
 
 module.exports = {
 	send_header : send_header,
+	send_footer : send_footer,
 	send_admin_header : send_admin_header,
 	send_admin_footer : send_admin_footer,
 	send_admin_view_problems : send_admin_view_problems,

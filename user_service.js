@@ -40,9 +40,11 @@ var init_user_profile = function(profile, user_name) {
 	profile.problem_map = gen_random_permutation(n_problems);
 	profile.problem_map_inverse = get_inverse(profile.problem_map);
 	profile.problems = [];
+	profile.score = 0;
+	profile.last_submit_time = new Date();
 	for (var i = 0; i < n_problems; i++) {
 		profile.problems.push({
-			selected : ""
+			selection : ""
 		});
 		if (!all_problems[i].shuffle) {
 			profile.problems[i].option_map = [0, 1, 2, 3];
@@ -92,12 +94,87 @@ var get_user_name = function(req) {
 };
 
 var get_score = function(req) {
-	// TODO
-	return 233;
+	return users[req.session.user_name].score;
 };
 
 var dump = function() {
 	return users;
+};
+
+var get_problems = function(req) {
+	var user_name = req.session.user_name;
+	var prof = users[user_name];
+	var all_problems = problems.get_problems();
+	
+	var ret = [];
+	var n = all_problems.length;
+	for (var i = 0; i < n; i++) {
+		var id = prof.problem_map[i];
+		var option_map = prof.problems[id].option_map;
+		var options = [];
+		for (var j = 0; j < 4; j++) {
+			options[j] = all_problems[id].options[option_map[j]];
+		}
+		var P = {
+			description : all_problems[id].description,
+			options : options,
+			selection : prof.problems[id].selection
+		};
+		ret[i] = P;
+	}
+	
+	return ret;
+};
+
+var submit = function(req) {
+	// console.log("submit : " + JSON.stringify(req.body));
+	var user_name = req.session.user_name;
+	var prof = users[user_name];
+	var all_problems = problems.get_problems();
+	var n = all_problems.length;
+	
+	var t = new Date(req.body.time);
+	if (!t || !(t > prof.last_submit_time)) {
+		return false;
+	}
+	
+	var selections = req.body["selections[]"];
+	if (!selections || !selections.length || selections.length !== n) {
+		return false;
+	}
+	
+	for (var i = 0; i < n; i++) {
+		var tmp = selections[i];
+		if (tmp != "" && tmp != "A" && tmp != "B" && tmp != "C" && tmp != "D") {
+			return false;
+		}
+	}
+	
+	prof.last_submit_time = t;
+	
+	var score = 0;
+	for (var i = 0; i < n; i++) {
+		var pid = prof.problem_map[i];
+		prof.problems[pid].selection = selections[i];
+		if (selections[i] != "") {
+			var tmp = {
+				A : 0,
+				B : 1,
+				C : 2,
+				D : 3
+			}[selections[i]];
+			if (["A", "B", "C", "D"][prof.problems[pid].option_map[tmp]] == all_problems[pid].answer) {
+				++score;
+			}
+		}
+	}
+	score = score * 100 * 100;
+	score -= score % n;
+	score /= n;
+	score /= 100;
+	prof.score = score;
+	
+	return true;
 };
 
 module.exports = {
@@ -107,5 +184,7 @@ module.exports = {
 	do_logout : do_logout,
 	get_user_name : get_user_name,
 	get_score : get_score,
-	dump : dump
+	dump : dump,
+	get_problems : get_problems,
+	submit : submit
 };

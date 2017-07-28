@@ -62,10 +62,38 @@ var get_remaining_time = function(req, res, err) {
 	res.send(exam_service.get_remaining_time() + "");
 };
 
+var get_problems = function(req, res, err) {
+	if (!user_service.check_login(req)) {
+		return res.redirect("/");
+	}
+	if (!exam_service.has_started()) {
+		return res.json([]);
+	}
+	if (exam_service.has_ended()) {
+		return res.json([]);
+	}
+	res.json(user_service.get_problems(req));
+};
+
+var submit = function(req, res, err) {
+	if (!user_service.check_login(req)) {
+		return res.redirect("/");
+	}
+	if (!exam_service.has_started()) {
+		return res.send("failed");
+	}
+	if (exam_service.has_ended()) {
+		return res.send("failed");
+	}
+	return res.send(user_service.submit(req) ? "success" : "failed");
+};
+
 module.exports = function(app) {
 	app.get("/", index);
 	app.post("/", index_login);
 	app.post("/logout", index_logout);
 	app.get("/exam", exam);
 	app.get("/get_remaining_time", get_remaining_time);
+	app.get("/get_problems", get_problems);
+	app.post("/submit", submit);
 };
